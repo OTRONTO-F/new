@@ -34,7 +34,7 @@ function Register() {
             
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
-                navigate('/dashboard');
+                navigate('/preferences');
             }
         } catch (error) {
             console.error('Registration error:', error);

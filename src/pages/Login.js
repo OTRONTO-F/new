@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { TextField, Button, Container, Typography, Box, Alert } from '@mui/material';
+import {
+    Container,
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Alert,
+    Paper,
+    Link
+} from '@mui/material';
 import { API_URL } from '../config/api';
 
 function Login() {
@@ -20,82 +29,97 @@ function Login() {
             const response = await axios.post(`${API_URL}/api/auth/login`, {
                 email,
                 password
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
             });
-
-            console.log('Response:', response); // Debug log
-
-            if (response && response.data && response.data.token) {
+            
+            if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
-                navigate('/dashboard');
-            } else {
-                setError('Invalid response from server');
+                navigate('/preferences');
             }
         } catch (error) {
             console.error('Login error:', error);
-            setError(error.response?.data?.error || 'Login failed');
+            setError(error.response?.data?.error || 'Invalid email or password');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Container maxWidth="sm">
-            <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Typography component="h1" variant="h5">
-                    Login
-                </Typography>
-                
-                {error && (
-                    <Alert severity="error" sx={{ mt: 2, width: '100%' }}>
-                        {error}
-                    </Alert>
-                )}
+        <Container component="main" maxWidth="xs">
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
+                }}
+            >
+                <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
+                    <Typography component="h1" variant="h4" align="center" gutterBottom>
+                        Dating App
+                    </Typography>
+                    
+                    <Typography component="h2" variant="h5" align="center" gutterBottom>
+                        Login
+                    </Typography>
 
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        label="Email Address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        autoComplete="email"
-                        autoFocus
-                        disabled={loading}
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
-                        disabled={loading}
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                        disabled={loading}
-                    >
-                        {loading ? 'Signing in...' : 'Sign In'}
-                    </Button>
-                </Box>
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                            {error}
+                        </Alert>
+                    )}
 
-                <Button
-                    onClick={() => navigate('/register')}
-                    fullWidth
-                    sx={{ mt: 1 }}
-                >
-                    Don't have an account? Register
-                </Button>
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={loading}
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            disabled={loading}
+                        />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                            disabled={loading}
+                        >
+                            {loading ? 'Signing in...' : 'Sign In'}
+                        </Button>
+
+                        <Box sx={{ mt: 2, textAlign: 'center' }}>
+                            <Typography variant="body2">
+                                Don't have an account?{' '}
+                                <Link
+                                    component="button"
+                                    variant="body2"
+                                    onClick={() => navigate('/register')}
+                                    sx={{ textDecoration: 'none' }}
+                                >
+                                    Register here
+                                </Link>
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Paper>
             </Box>
         </Container>
     );

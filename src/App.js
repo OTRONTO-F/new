@@ -1,59 +1,58 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ChatProvider } from './contexts/ChatContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Import components
 import Navbar from './components/Navbar';
-import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
+import Preferences from './pages/Preferences';
 import Matches from './pages/Matches';
+import Chat from './components/Chat';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
-    const isLoggedIn = !!localStorage.getItem('token');
-
     return (
-        <BrowserRouter>
-            <Navbar />
-            <Routes>
-                {/* Show Landing page for non-authenticated users */}
-                <Route path="/" element={
-                    isLoggedIn 
-                    ? <Navigate to="/dashboard" />
-                    : <Landing />
-                } />
-                
-                <Route path="/login" element={
-                    isLoggedIn 
-                    ? <Navigate to="/dashboard" />
-                    : <Login />
-                } />
-                <Route path="/register" element={
-                    isLoggedIn 
-                    ? <Navigate to="/dashboard" />
-                    : <Register />
-                } />
-                
-                {/* Protected Routes */}
-                <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                        <Dashboard />
-                    </ProtectedRoute>
-                } />
-                <Route path="/profile" element={
-                    <ProtectedRoute>
-                        <Profile />
-                    </ProtectedRoute>
-                } />
-                <Route path="/matches" element={
-                    <ProtectedRoute>
-                        <Matches />
-                    </ProtectedRoute>
-                } />
-
-                {/* Catch all undefined routes */}
-                <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-        </BrowserRouter>
+        <Router>
+            <ChatProvider>
+                <div className="App">
+                    <Navbar />
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route 
+                            path="/dashboard" 
+                            element={
+                                <PrivateRoute>
+                                    <Dashboard />
+                                </PrivateRoute>
+                            } 
+                        />
+                        <Route 
+                            path="/preferences" 
+                            element={
+                                <PrivateRoute>
+                                    <Preferences />
+                                </PrivateRoute>
+                            } 
+                        />
+                        <Route 
+                            path="/matches" 
+                            element={
+                                <PrivateRoute>
+                                    <Matches />
+                                </PrivateRoute>
+                            } 
+                        />
+                        <Route path="/" element={<Login />} />
+                    </Routes>
+                    <ToastContainer />
+                </div>
+            </ChatProvider>
+        </Router>
     );
 }
 
